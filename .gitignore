@@ -2,5 +2,5 @@ python/stocks/share/
 python/stocks/bin/
 python/stocks/lib/
 python/stocks/include/
-python/stocks/pyenv.cfg
+python/stocks/pyvenv.cfg
 

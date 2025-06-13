@@ -17,8 +17,16 @@ source stocks/bin/activate
 
 To install the libraries
 ```
+pip install pandas
+pip install yfinance
+pip install lxml
 pip install statsmodels
 pip install seaborn
-pip install lxml
 pip install pulp
 ```
+
+To deactivate
+```
+deactivate
+```
+

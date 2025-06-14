@@ -17,6 +17,7 @@ source stocks/bin/activate
 
 To install the libraries
 ```
+pip install requests
 pip install pandas
 pip install yfinance
 pip install lxml

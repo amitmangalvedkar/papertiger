@@ -1,29 +1,33 @@
 import yfinance as yf
 import pandas as pd
 
-def get_stocks_ma_comparison(stock_symbols):
+def get_stocks_ma_comparison(stock_symbols, short_term_ma_period = 5, short_term_ma_term = 'MA5', 
+                             long_term_ma_period = 20, long_term_ma_term = 'MA20'):
 
     selected_stocks = []
     stock_with_averages = [ [0]*3 for i in range(3)]
 
     for symbol in stock_symbols:
-        data = yf.download(symbol, period='30d', interval='1d')
+
+        #'auto_adjust = True' will suppress 'YF.download() has changed argument auto_adjust default to True'
+        #'progress = False' will suppress '[*********************100%***********************]  1 of 1 completed'
+        data = yf.download(symbol, auto_adjust = True, progress = False, period='30d', interval='1d')
         if data.empty or len(data) < 20:
             continue  # skip if not enough data
 
-        data['MA5'] = data['Close'].rolling(window=5).mean()
-        data['MA20'] = data['Close'].rolling(window=20).mean()
+        data[short_term_ma_term] = data['Close'].rolling(window = short_term_ma_period).mean()
+        data[long_term_ma_term] = data['Close'].rolling(window = long_term_ma_period).mean()
 
-        latest_ma5 = data['MA5'].iloc[-1]
-        latest_ma20 = data['MA20'].iloc[-1]
+        latest_short_term = data[short_term_ma_term].iloc[-1]
+        latest_long_term = data[long_term_ma_term].iloc[-1]
 
-        if pd.notna(latest_ma5) and pd.notna(latest_ma20) and latest_ma5 > latest_ma20:
-            ma_diff = latest_ma5 - latest_ma20
-            ma_diff_pct = (ma_diff / latest_ma20) * 100
+        if pd.notna(latest_short_term) and pd.notna(latest_long_term) and latest_short_term > latest_long_term:
+            ma_diff = latest_short_term - latest_long_term
+            ma_diff_pct = (ma_diff / latest_long_term) * 100
             selected_stocks.append({
                 'Symbol': symbol,
-                'MA5': round(latest_ma5, 2),
-                'MA20': round(latest_ma20, 2),
+                short_term_ma_term: round(latest_short_term, 2),
+                long_term_ma_term: round(latest_long_term, 2),
                 'MA_Diff': round(ma_diff, 2),
                 'MA_Diff_Pct': round(ma_diff_pct, 2)
             })
@@ -46,12 +50,11 @@ stock_symbols = [
     'TECHM.NS', 'UPL.NS', 'WIPRO.NS', 'HINDALCO.NS', 'ICICIPRULI.NS'
 ]
 
-stocks = get_stocks_ma_comparison(stock_symbols)
+stocks = get_stocks_ma_comparison(stock_symbols, 5, 'MAS5', 20, 'MAS20')
 print("Selected Stocks with Moving Averages (5MA > 20MA):")
 print(stocks)
 
-'''
-for symbol in stocks:
-    data = yf.download(symbol, period='30d', interval='1d')
-    print(data)
-'''
+
+stocks = get_stocks_ma_comparison(stock_symbols, 50, 'MAS50', 200, 'MAS200')
+print("Selected Stocks with Moving Averages (50MA > 200MA):")
+print(stocks)

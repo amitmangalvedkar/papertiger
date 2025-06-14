@@ -37,7 +37,7 @@ def get_stocks_ma_comparison(stock_symbols, short_term_ma_period = 5, short_term
         df = df.sort_values(by='MA_Diff_Pct', ascending=False).reset_index(drop=True)
     return df
 
-stock_symbols = [
+nifty_stock_symbols = [
     'RELIANCE.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'TCS.NS',
     'HINDUNILVR.NS', 'ITC.NS', 'KOTAKBANK.NS', 'LT.NS', 'SBIN.NS',
     'BHARTIARTL.NS', 'ASIANPAINT.NS', 'HCLTECH.NS', 'BAJFINANCE.NS', 'MARUTI.NS',
@@ -50,11 +50,11 @@ stock_symbols = [
     'TECHM.NS', 'UPL.NS', 'WIPRO.NS', 'HINDALCO.NS', 'ICICIPRULI.NS'
 ]
 
-stocks = get_stocks_ma_comparison(stock_symbols, 5, 'MAS5', 20, 'MAS20')
+stocks = get_stocks_ma_comparison(nifty_stock_symbols, 5, 'MAS5', 20, 'MAS20')
 print("Selected Stocks with Moving Averages (5MA > 20MA):")
 print(stocks)
 
 
-stocks = get_stocks_ma_comparison(stock_symbols, 50, 'MAS50', 200, 'MAS200')
+stocks = get_stocks_ma_comparison(nifty_stock_symbols, 50, 'MAS50', 200, 'MAS200')
 print("Selected Stocks with Moving Averages (50MA > 200MA):")
 print(stocks)

@@ -1,23 +1,12 @@
 import yfinance as yf
 import pandas as pd
 
-def get_nifty50_data():
-    nifty50_symbols = [
-        'RELIANCE.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'TCS.NS',
-        'HINDUNILVR.NS', 'ITC.NS', 'KOTAKBANK.NS', 'LT.NS', 'SBIN.NS',
-        'BHARTIARTL.NS', 'ASIANPAINT.NS', 'HCLTECH.NS', 'BAJFINANCE.NS', 'MARUTI.NS',
-        'AXISBANK.NS', 'SUNPHARMA.NS', 'ULTRACEMCO.NS', 'TITAN.NS', 'NESTLEIND.NS',
-        'TATAMOTORS.NS', 'POWERGRID.NS', 'ONGC.NS', 'ADANIPORTS.NS', 'NTPC.NS',
-        'JSWSTEEL.NS', 'GRASIM.NS', 'TATASTEEL.NS', 'BPCL.NS', 'COALINDIA.NS',
-        'DIVISLAB.NS', 'DRREDDY.NS', 'EICHERMOT.NS', 'HEROMOTOCO.NS', 'HDFCLIFE.NS',
-        'INDUSINDBK.NS', 'BAJAJFINSV.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'SHREECEM.NS',
-        'ADANIENT.NS', 'APOLLOHOSP.NS', 'BAJAJ-AUTO.NS', 'SBILIFE.NS', 'TATACONSUM.NS',
-        'TECHM.NS', 'UPL.NS', 'WIPRO.NS', 'HINDALCO.NS', 'ICICIPRULI.NS'
-    ]
+def get_stocks_ma_comparison(stock_symbols):
+
     selected_stocks = []
     stock_with_averages = [ [0]*3 for i in range(3)]
 
-    for symbol in nifty50_symbols:
+    for symbol in stock_symbols:
         data = yf.download(symbol, period='30d', interval='1d')
         if data.empty or len(data) < 20:
             continue  # skip if not enough data
@@ -44,7 +33,20 @@ def get_nifty50_data():
         df = df.sort_values(by='MA_Diff_Pct', ascending=False).reset_index(drop=True)
     return df
 
-stocks = get_nifty50_data()
+stock_symbols = [
+    'RELIANCE.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'TCS.NS',
+    'HINDUNILVR.NS', 'ITC.NS', 'KOTAKBANK.NS', 'LT.NS', 'SBIN.NS',
+    'BHARTIARTL.NS', 'ASIANPAINT.NS', 'HCLTECH.NS', 'BAJFINANCE.NS', 'MARUTI.NS',
+    'AXISBANK.NS', 'SUNPHARMA.NS', 'ULTRACEMCO.NS', 'TITAN.NS', 'NESTLEIND.NS',
+    'TATAMOTORS.NS', 'POWERGRID.NS', 'ONGC.NS', 'ADANIPORTS.NS', 'NTPC.NS',
+    'JSWSTEEL.NS', 'GRASIM.NS', 'TATASTEEL.NS', 'BPCL.NS', 'COALINDIA.NS',
+    'DIVISLAB.NS', 'DRREDDY.NS', 'EICHERMOT.NS', 'HEROMOTOCO.NS', 'HDFCLIFE.NS',
+    'INDUSINDBK.NS', 'BAJAJFINSV.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'SHREECEM.NS',
+    'ADANIENT.NS', 'APOLLOHOSP.NS', 'BAJAJ-AUTO.NS', 'SBILIFE.NS', 'TATACONSUM.NS',
+    'TECHM.NS', 'UPL.NS', 'WIPRO.NS', 'HINDALCO.NS', 'ICICIPRULI.NS'
+]
+
+stocks = get_stocks_ma_comparison(stock_symbols)
 print("Selected Stocks with Moving Averages (5MA > 20MA):")
 print(stocks)
 

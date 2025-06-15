@@ -2,6 +2,8 @@ import yfinance as yf
 import pandas as pd
 import json
 
+import nifty50 as nifty50
+
 def get_moving_averages(stock_symbols, short_term_ma_period = 5, short_term_ma_term = 'MA5', 
                              long_term_ma_period = 20, long_term_ma_term = 'MA20'):
 
@@ -38,26 +40,7 @@ def get_moving_averages(stock_symbols, short_term_ma_period = 5, short_term_ma_t
         df = df.sort_values(by='MA_Diff_Pct', ascending=False).reset_index(drop=True)
     return df
 
-try:
-    #This expects a file with the name nifty_stock_symbols having contents such as
-    #["RELIANCE.NS", "TCS.NS", "INFY.NS"] to be present in the same folder
-    # Load from disk
-    with open('nifty_list.json', 'r') as f:
-        nifty_stock_symbols = json.load(f)
-except:
-    print("Exception thrown....")
-    nifty_stock_symbols = [
-        'RELIANCE.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'TCS.NS',
-        'HINDUNILVR.NS', 'ITC.NS', 'KOTAKBANK.NS', 'LT.NS', 'SBIN.NS',
-        'BHARTIARTL.NS', 'ASIANPAINT.NS', 'HCLTECH.NS', 'BAJFINANCE.NS', 'MARUTI.NS',
-        'AXISBANK.NS', 'SUNPHARMA.NS', 'ULTRACEMCO.NS', 'TITAN.NS', 'NESTLEIND.NS',
-        'TATAMOTORS.NS', 'POWERGRID.NS', 'ONGC.NS', 'ADANIPORTS.NS', 'NTPC.NS',
-        'JSWSTEEL.NS', 'GRASIM.NS', 'TATASTEEL.NS', 'BPCL.NS', 'COALINDIA.NS',
-        'DIVISLAB.NS', 'DRREDDY.NS', 'EICHERMOT.NS', 'HEROMOTOCO.NS', 'HDFCLIFE.NS',
-        'INDUSINDBK.NS', 'BAJAJFINSV.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'SHREECEM.NS',
-        'ADANIENT.NS', 'APOLLOHOSP.NS', 'BAJAJ-AUTO.NS', 'SBILIFE.NS', 'TATACONSUM.NS',
-        'TECHM.NS', 'UPL.NS', 'WIPRO.NS', 'HINDALCO.NS', 'ICICIPRULI.NS'
-    ]
+nifty_stock_symbols = nifty50.get_nifty50_symbols()
 
 stocks = get_moving_averages(nifty_stock_symbols, 5, 'MA5', 20, 'MA20')
 print("\nSelected Stocks with Moving Averages:")

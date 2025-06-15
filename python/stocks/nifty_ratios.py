@@ -5,8 +5,12 @@ import statsmodels.api as sm
 
 import seaborn as sns
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+
+import nifty50 as nifty50
 
 # ✅ Step 1: Nifty 50 stock symbols (Yahoo Finance format)
+'''
 nifty_50_symbols = [
     'RELIANCE.NS', 'TCS.NS', 'INFY.NS', 'HDFCBANK.NS', 'ICICIBANK.NS',
     'HINDUNILVR.NS', 'ITC.NS', 'KOTAKBANK.NS', 'LT.NS', 'SBIN.NS',
@@ -19,12 +23,13 @@ nifty_50_symbols = [
     'DRREDDY.NS', 'TATASTEEL.NS', 'M&M.NS', 'UPL.NS', 'SBILIFE.NS',
     'HDFCLIFE.NS', 'BAJAJ-AUTO.NS', 'APOLLOHOSP.NS', 'ICICIPRULI.NS', 'SHREECEM.NS'
 ]
-
+'''
+nifty_50_symbols = nifty50.get_nifty50_symbols()
 
 symbols = nifty_50_symbols + ['^NSEI']  # Include NIFTY50 index
 
 # ✅ Step 2: Download 1 year of adjusted close prices
-price_data = yf.download(symbols, period='1y')['Close'].dropna()
+price_data = yf.download(symbols, auto_adjust = True, progress = False, period='1y')['Close'].dropna()
 
 # ✅ Step 2: Download 3 years of adjusted close prices
 #price_data = yf.download(symbols, period='3y')['Close'].dropna()
@@ -34,7 +39,7 @@ price_data = yf.download(symbols, period='1y')['Close'].dropna()
 returns = price_data.pct_change().dropna()
 market_returns = returns['^NSEI']
 risk_free_rate = 0.07  # Annual risk-free rate (approx. Indian 10-yr govt bond yield)
-daily_rfr = risk_free_rate / 252
+daily_risk_free_return = risk_free_rate / 252
 market_annual_return = market_returns.mean() * 252
 
 
@@ -42,21 +47,21 @@ market_annual_return = market_returns.mean() * 252
 results = []
 
 # ✅ Step 4: Metrics for each stock
-# ✅ Step 4: Metrics for each stock
 for stock in nifty_50_symbols:
-    daily_ret = returns[stock]
-    annual_ret = daily_ret.mean() * 252
-    annual_vol = daily_ret.std() * np.sqrt(252)
+    daily_returns = returns[stock]
+    annual_ret = daily_returns.mean() * 252
+    annual_vol = daily_returns.std() * np.sqrt(252)
 
     # Excess returns
-    excess_ret = daily_ret - daily_rfr
-    sharpe = excess_ret.mean() / daily_ret.std() * np.sqrt(252)
+    excess_ret = daily_returns - daily_risk_free_return
+    sharpe = excess_ret.mean() / daily_returns.std() * np.sqrt(252)
 
     # Regression for Beta
     X = sm.add_constant(market_returns)
-    model = sm.OLS(daily_ret, X).fit()
-    beta = model.params[1]
-
+    model = sm.OLS(daily_returns, X).fit()
+    #beta = model.params[1]
+    beta = model.params.iloc[1]
+    
     # Treynor Ratio
     treynor = (annual_ret - risk_free_rate) / beta if beta != 0 else np.nan
 
@@ -101,9 +106,16 @@ top10_df = df.head(10)[['Sharpe Ratio', 'Treynor Ratio', 'Jensen Alpha']]
 normalized_top10 = (top10_df - top10_df.mean()) / top10_df.std()
 
 # ✅ Plot Heatmap
-plt.figure(figsize=(10, 6))
-sns.heatmap(normalized_top10, annot=True, cmap='coolwarm', fmt=".2f", cbar=True)
-plt.title("🔥 Top 10 NIFTY Stocks: Risk-Adjusted Metrics Heatmap")
+fig = plt.figure(figsize=(10, 6))
+fig.canvas.manager.set_window_title("My Custom Heatmap Title")
+#sns.heatmap(normalized_top10, annot=True, cmap='warmcool', fmt=".2f", cbar=True)
+
+# Create a custom colormap from dark red (low) to dark green (high)
+colors = ["darkred", "yellow", "darkgreen"]
+cmap = LinearSegmentedColormap.from_list("custom_heatmap", colors)
+sns.heatmap(normalized_top10, annot=True, cmap=cmap, fmt=".2f", cbar=True)
+
+plt.title("Top 10 NIFTY Stocks: Risk-Adjusted Metrics Heatmap")
 plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()

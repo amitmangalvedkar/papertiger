@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 
-def get_stocks_ma_comparison(stock_symbols, short_term_ma_period = 5, short_term_ma_term = 'MA5', 
+def get_moving_averages(stock_symbols, short_term_ma_period = 5, short_term_ma_term = 'MA5', 
                              long_term_ma_period = 20, long_term_ma_term = 'MA20'):
 
     selected_stocks = []
@@ -21,7 +21,7 @@ def get_stocks_ma_comparison(stock_symbols, short_term_ma_period = 5, short_term
         latest_short_term = data[short_term_ma_term].iloc[-1]
         latest_long_term = data[long_term_ma_term].iloc[-1]
 
-        if pd.notna(latest_short_term) and pd.notna(latest_long_term) and latest_short_term > latest_long_term:
+        if pd.notna(latest_short_term) and pd.notna(latest_long_term):
             ma_diff = latest_short_term - latest_long_term
             ma_diff_pct = (ma_diff / latest_long_term) * 100
             selected_stocks.append({
@@ -50,11 +50,8 @@ nifty_stock_symbols = [
     'TECHM.NS', 'UPL.NS', 'WIPRO.NS', 'HINDALCO.NS', 'ICICIPRULI.NS'
 ]
 
-stocks = get_stocks_ma_comparison(nifty_stock_symbols, 5, 'MAS5', 20, 'MAS20')
-print("Selected Stocks with Moving Averages (5MA > 20MA):")
-print(stocks)
-
-
-stocks = get_stocks_ma_comparison(nifty_stock_symbols, 50, 'MAS50', 200, 'MAS200')
-print("Selected Stocks with Moving Averages (50MA > 200MA):")
+stocks = get_moving_averages(nifty_stock_symbols, 5, 'MA5', 20, 'MA20')
+print("\nSelected Stocks with Moving Averages:")
+print("Bullish trend when MA5 > MA20")
+print("Bearish trend when MA5 < MA20")
 print(stocks)

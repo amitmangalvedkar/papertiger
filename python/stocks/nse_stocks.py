@@ -20,7 +20,8 @@ import requests
 import pandas as pd
 from io import StringIO
 
-def get_nse_in_dataframe(url = "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv", local_path=None, use_columns=None):
+def get_nse_equities(url = "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv", local_path = None, 
+                         use_columns = None):
     headers = {
         "User-Agent": "Mozilla/5.0",
         "Referer": url
@@ -52,9 +53,10 @@ def get_nse_in_dataframe(url = "https://nsearchives.nseindia.com/content/equitie
         return pd.DataFrame()
 
 # 🔍 Example usage:
-#url = "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv"
 #columns = ["SYMBOL", "NAME OF COMPANY"]
-df = get_nse_in_dataframe(local_path = None, use_columns = None)
+#This would display only the specified columns, although it would store everything in the csv
+#df = get_nse_equities(local_path = "nse_stocks.csv", use_columns = columns)
 
+df = get_nse_equities(local_path = None, use_columns = None)
 # Display top 5 rows
 print(df)
